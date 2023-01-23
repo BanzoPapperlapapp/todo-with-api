@@ -1,0 +1,115 @@
+.container {
+    margin-right: 30px;
+    border: 1px solid darkgray;
+    border-radius: 15px;
+}
+
+.box {
+    position: relative;
+    margin-right: 40px;
+    min-width: 200px;
+    min-height: 150px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+.box::before,
+.box::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    width: 40%;
+    height: 10px;
+    box-shadow: 0 5px 14px rgba(0,0,0,.7);
+    z-index: -1;
+    transition: all .3s ease-in-out;
+}
+
+.box::before {
+    left: 15px;
+    transform: skew(-5deg) rotate(-5deg);
+}
+
+.box::after {
+    right: 15px;
+    transform: skew(5deg) rotate(5deg);
+}
+
+.box:hover::before,
+.box:hover::after {
+    box-shadow: 0 2px 14px rgba(0,0,0,.4);
+}
+
+.box:hover::before {
+    left: 5px;
+}
+
+.box:hover::after {
+    right: 5px;
+}
+.list {
+    list-style: none;
+    padding: 5px;
+}
+.loader {
+    --b: 5px;  /* border thickness */
+    --n: 6;    /* number of dashes*/
+    --g: 20deg; /* gap  between dashes*/
+    --c: black;   /* the color */
+    width:40px; /* size */
+    aspect-ratio: 1;
+    border-radius: 50%;
+    padding: 1px; /* get rid of bad outlines */
+    background: conic-gradient(#0000,var(--c)) content-box;
+    --_m: /* we use +/-1deg between colors to avoid jagged edges */
+            repeating-conic-gradient(#0000 0deg,
+            #000 1deg calc(360deg/var(--n) - var(--g) - 1deg),
+            #0000     calc(360deg/var(--n) - var(--g)) calc(360deg/var(--n))),
+            radial-gradient(farthest-side,#0000 calc(98% - var(--b)),#000 calc(100% - var(--b)));
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
+    -webkit-mask-composite: destination-in;
+    mask-composite: intersect;
+    animation: load 1s infinite steps(var(--n));
+}
+@keyframes load {to{transform: rotate(1turn)}}
+
+
+.btn {
+    background-color: DodgerBlue;
+    border: none;
+    color: white;
+    /*border-radius: 50%;*/
+    padding: 12px 12px;
+    /*height: 30px;*/
+    /*width: 30px;*/
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+/* Darker background on mouse-over */
+.btn:hover {
+    opacity: 1;
+}
+
+.header {
+    background: DodgerBlue;
+    min-height: 40px;
+    padding-left: 5px;
+}
+.header input{
+    height: 25px;
+    outline: none;
+}
+
+.todolistWrapper {
+    padding: 10px;
+}
+.todolistWrapper li{
+    border-bottom: 1px solid gray;
+}
+.todolistWrapper ul{
+    margin: 0;
+    padding: 0;
+}

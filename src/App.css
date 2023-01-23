@@ -1,0 +1,24 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  background: #efefef;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+}
+
+.App {
+  width: 1200px;
+}
+
+.AddItem {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
