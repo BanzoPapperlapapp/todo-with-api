@@ -46,7 +46,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
         dispatch(changeTaskTitleTC(id, taskId, title))
     }
     return (
-        <div className={style.box}>
+        <div className={style.container}>
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',

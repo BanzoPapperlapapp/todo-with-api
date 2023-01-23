@@ -1,5 +1,5 @@
 .container {
     display: flex;
-    justify-content: left;
-    padding: 20px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 }

@@ -1,20 +1,14 @@
 .container {
-    margin-right: 30px;
-    border: 1px solid darkgray;
-    border-radius: 15px;
-}
-
-.box {
     position: relative;
-    margin-right: 40px;
+    margin: 15px;
     min-width: 200px;
     min-height: 150px;
     background: #fff;
     border-radius: 2px;
 }
 
-.box::before,
-.box::after {
+.container::before,
+.container::after {
     content: '';
     position: absolute;
     bottom: 10px;
@@ -25,26 +19,26 @@
     transition: all .3s ease-in-out;
 }
 
-.box::before {
+.container::before {
     left: 15px;
     transform: skew(-5deg) rotate(-5deg);
 }
 
-.box::after {
+.container::after {
     right: 15px;
     transform: skew(5deg) rotate(5deg);
 }
 
-.box:hover::before,
-.box:hover::after {
+.container:hover::before,
+.container:hover::after {
     box-shadow: 0 2px 14px rgba(0,0,0,.4);
 }
 
-.box:hover::before {
+.container:hover::before {
     left: 5px;
 }
 
-.box:hover::after {
+.container:hover::after {
     right: 5px;
 }
 .list {
@@ -106,6 +100,7 @@
 .todolistWrapper {
     padding: 10px;
 }
+
 .todolistWrapper li{
     border-bottom: 1px solid gray;
 }
