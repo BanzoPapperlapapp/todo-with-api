@@ -14,6 +14,7 @@ import {changeTodoTC, delTodoTC} from "../../store/TodoReducer";
 import {EditableSpan} from "../common/Editablespan";
 import {ModalWindow} from "../common/UI/ModalWindows/ModalWindow";
 import {AddItem} from "../common/AddItem";
+import {CircleProgressBar} from "../common/UI/ProgressBars/CircleProgressBar";
 
 type TodoPropsTypes = {
     title: string
@@ -88,7 +89,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
                 </div>
                 <ul className={style.list}>
                     {isLoading
-                        ? <div className={style.loader}></div>
+                        ? <div style={{display: 'flex', justifyContent: 'center',padding: '10px'}}><CircleProgressBar/> </div>
                         : tasks.length
                             ? tasks.map(t => <li
                                 key={t.id}>
