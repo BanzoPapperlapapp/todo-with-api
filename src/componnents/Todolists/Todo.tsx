@@ -12,6 +12,8 @@ import {
 } from "../../store/TaskReducer";
 import {changeTodoTC, delTodoTC} from "../../store/TodoReducer";
 import {EditableSpan} from "../common/Editablespan";
+import {ModalWindow} from "../common/UI/ModalWindows/ModalWindow";
+import {AddItem} from "../common/AddItem";
 
 type TodoPropsTypes = {
     title: string
@@ -20,7 +22,7 @@ type TodoPropsTypes = {
 }
 export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
     const [isLoading, setIsLoading] = useState(true)
-    const [taskTitle, setTaskTitle] = useState('')
+    const [statusModal, setStatusModal] = useState(false)
 
     const dispatch = useAppDispatch()
 
@@ -33,9 +35,15 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
 
     const delTodoHandler = () => dispatch(delTodoTC(id))
 
-    const addTaskHandler = () => dispatch(addTaskTC(id, taskTitle))
+    const addTaskHandler = (title: string) => {
+        dispatch(addTaskTC(id, title))
+        setStatusModal(false)
+    }
 
     const delTaskHandler = (taskId: string) => dispatch(delTaskTC(id, taskId))
+
+    const onClickActiveModalWindow = (status: boolean) => setStatusModal(status)
+
 
     const changeTaskStatusHandler = (e: React.ChangeEvent<HTMLInputElement>, taskId: string) => {
         const status = e.currentTarget.checked ? TaskApiStatuses.Completed : TaskApiStatuses.Now
@@ -47,23 +55,28 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
     }
     return (
         <div className={style.container}>
+            <ModalWindow setStatus={onClickActiveModalWindow} status={statusModal}>
+                <AddItem title={'Добавление таски'} addItem={addTaskHandler} />
+            </ModalWindow>
             <div style={{
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'left'
             }}>
                 <div className={style.header}>
-                    <input type={"text"} placeholder={"Поиск..."}/>
+                    <input className={style.search} type={"search"} placeholder={"Поиск..."}/>
+
                     <button
                         className={style.btn}
+                        onClick={() => onClickActiveModalWindow(true)}
                     >
                         <i className="fa fa-plus"></i>
                     </button>
-                    <button
-                        className={style.btn}
-                        onClick={delTodoHandler}
-                    ><i className="fa fa-trash"></i>
+
+                    <button className={style.btn} onClick={delTodoHandler}>
+                        <i className="fa fa-trash"></i>
                     </button>
+
                 </div>
             </div>
             <div className={style.todolistWrapper}>
@@ -71,9 +84,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
                     <EditableSpan title={title} addItem={(todoTitle: string) => changeTodoTitle(todoTitle)}/>
                 </h3>
                 <div>
-                    <input type={"text"} value={taskTitle}
-                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTaskTitle(e.currentTarget.value)}/>
-                    <button onClick={addTaskHandler}>+</button>
+
                 </div>
                 <ul className={style.list}>
                     {isLoading

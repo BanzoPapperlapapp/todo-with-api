@@ -3,22 +3,18 @@ import './App.css';
 import {Todolists} from "./componnents/Todolists/Todolists";
 import {useAppDispatch} from "./store/ReduxStore";
 import {addTodoTC} from "./store/TodoReducer";
+import {AddItem} from "./componnents/common/AddItem";
 
 function App() {
-    const [title,setTitle] = useState('')
     const dispatch = useAppDispatch()
-    const addTodoHandler = () => {
+    const addTodoHandler = (title: string) => {
         dispatch(addTodoTC(title))
     }
   return (
     <div className="App">
+
         <div className="AddItem">
-            <input
-                type={"text"}
-                value={title}
-                onChange={(e:React.ChangeEvent<HTMLInputElement>) => setTitle(e.currentTarget.value)}
-            />
-            <button onClick={addTodoHandler}>+</button>
+            <AddItem addItem={addTodoHandler}/>
         </div>
         <Todolists/>
     </div>

@@ -1,5 +1,5 @@
 .container {
-    position: relative;
+    /*position: relative;*/
     margin: 15px;
     min-width: 200px;
     min-height: 150px;
@@ -10,7 +10,7 @@
 .container::before,
 .container::after {
     content: '';
-    position: absolute;
+    /*position: absolute;*/
     bottom: 10px;
     width: 40%;
     height: 10px;
@@ -79,12 +79,12 @@
     /*width: 30px;*/
     font-size: 16px;
     cursor: pointer;
-    opacity: 0.8;
+    /*opacity: 0.8;*/
 }
 
 /* Darker background on mouse-over */
 .btn:hover {
-    opacity: 1;
+    /*opacity: 1;*/
 }
 
 .header {
@@ -96,7 +96,11 @@
     height: 25px;
     outline: none;
 }
+.search::-webkit-search-cancel-button {
+    cursor: pointer;
+    background: url('https://pro.fontawesome.com/releases/v5.10.0/svgs/solid/times-circle.svg') no-repeat 50% 50%;
 
+}
 .todolistWrapper {
     padding: 10px;
 }
