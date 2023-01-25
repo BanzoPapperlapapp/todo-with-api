@@ -1,6 +1,6 @@
 import {todoApi, TodoApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
-import {changeAppStatusAC} from "./AppReducer";
+import {changeAppStatusAC, setAppErrorAC} from "./AppReducer";
 
 export type TodoDomainFilterType = 'all' | 'completed' | 'active'
 
@@ -50,23 +50,45 @@ export const changeTodoTitleAC = (todoId: string, title: string) => {
 }
 export const addTodoTC = (title: string) => {
     return async (dispatch: Dispatch) => {
-        dispatch(changeAppStatusAC('loading'))
-        const todo = await todoApi.addTodo(title)
-        dispatch(changeAppStatusAC('resolve'))
-        const newTodo: TodoDomainType = {...todo.data.data.item,filter: 'all'}
-        dispatch(addTodoAC(newTodo))
+        try{
+            console.log('addTodo')
+            dispatch(changeAppStatusAC('loading'))
+            const todo = await todoApi.addTodo(title)
+            dispatch(changeAppStatusAC('resolve'))
+            const newTodo: TodoDomainType = {...todo.data.data.item,filter: 'all'}
+            dispatch(addTodoAC(newTodo))
+        }
+        catch(e){
+            console.log('what a fuck')
+        }
     }
 }
 export const getTodosTC = () => {
-    return (dispatch: Dispatch) => {
-        todoApi.getTodos()
-            .then(res => dispatch(getTodosAC(res.data)))
+    return async (dispatch: Dispatch) => {
+        try{
+            dispatch(changeAppStatusAC('loading'))
+            const todos = await  todoApi.getTodos()
+            dispatch(changeAppStatusAC('resolve'))
+            dispatch(getTodosAC(todos.data))
+        } catch (e){
+            console.log((e as Error).message)
+            dispatch(setAppErrorAC((e as Error).message))
+        }
+
+
     }
 }
 export const delTodoTC = (todoId: string) => {
-    return (dispatch: Dispatch) => {
-        todoApi.delTodo(todoId)
-            .then(() => dispatch(delTodoAC(todoId)))
+    return async (dispatch: Dispatch) => {
+        try{
+            // dispatch(changeAppStatusAC('loading'))
+            const res = await todoApi.delTodo(todoId)
+            // dispatch(changeAppStatusAC('resolve'))
+            dispatch(delTodoAC(todoId))
+        } catch (e){
+            console.log(e)
+            dispatch(setAppErrorAC('Some errorrrrrrrr'))
+        }
     }
 }
 export const changeTodoTC = (todoId: string,title: string) => {

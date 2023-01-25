@@ -10,7 +10,6 @@ import {StatusAppType} from "./store/AppReducer";
 import {SnackBar} from "./componnents/common/UI/SnackBar/SnackBar";
 
 function App() {
-    // const [status, setStatus] = useState(false)
     const status = useSelector<RootStateType,StatusAppType>(state => state.app.status)
     const dispatch = useAppDispatch()
     const addTodoHandler = (title: string) => {
@@ -26,10 +25,7 @@ function App() {
                         <AddItem addItem={addTodoHandler}/>
                     </div>
                     <Todolists/>
-                    <SnackBar
-                        title={'test..........'}
-                        error={true}
-                    />
+                    <SnackBar/>
                 </div>
             </div>
     );

@@ -19,6 +19,9 @@
 .disable {
     visibility: hidden;
 }
+.red {
+    background: crimson;
+}
 /* Анимация, чтобы исчезать снэк-бар в и из */
 @-webkit-keyframes fadein {
     from {bottom: 0; opacity: 0;}
