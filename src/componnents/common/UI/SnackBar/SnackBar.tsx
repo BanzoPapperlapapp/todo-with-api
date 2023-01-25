@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import style from './SnackBar.module.css'
-import {AppReducerStateType} from "../../../../store/AppReducer";
-import {useSelector} from "react-redux";
-import {RootStateType} from "../../../../store/ReduxStore";
+import { setAppErrorAC} from "../../../../store/AppReducer";
+import {useAppDispatch, useAppSelector} from "../../../../store/ReduxStore";
 
 export const SnackBar = () => {
-    const {error} = useSelector<RootStateType,AppReducerStateType>(state => state.app)
-    const [visible, setVisible] = useState(!!error)
-
+    const error = useAppSelector<null | string>(state => state.app.error)
+    const dispatch = useAppDispatch()
     useEffect(()=>{
-        const id = setTimeout(()=>setVisible(false),3000)
+            const id = error?.length && setTimeout(()=> {
+                dispatch(setAppErrorAC(null))
+            },2000)
         return ()=> clearTimeout(id)
     },[error])
 
@@ -17,7 +17,7 @@ export const SnackBar = () => {
         ? `${style.snackbar} ${style.red}`
         : `${style.snackbar}`
 
-    return  visible
+    return  error !== null
         ?
         <div className={finalSnackBarStyle}><span>{error}</span></div>
         :

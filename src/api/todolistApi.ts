@@ -62,7 +62,7 @@ type addTodoResponseType = {
 type TodoApiResponseType<D = {}> = {
     data: D
     resultCode: number
-    messages: string
+    messages: string[]
 }
 export const todoApi = {
     getTodos (){

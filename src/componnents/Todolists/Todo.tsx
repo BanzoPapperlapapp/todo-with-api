@@ -90,7 +90,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
                 <ul className={style.list}>
                     {isLoading
                         ? <div style={{display: 'flex', justifyContent: 'center',padding: '10px'}}><CircleProgressBar/> </div>
-                        : tasks.length
+                        : tasks?.length
                             ? tasks.map(t => <li
                                 key={t.id}>
                                 <input

@@ -2,6 +2,8 @@ import {todoApi, TodoApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
 import {changeAppStatusAC, setAppErrorAC} from "./AppReducer";
 
+
+
 export type TodoDomainFilterType = 'all' | 'completed' | 'active'
 
 export type TodoDomainType = TodoApiType & {
@@ -50,17 +52,23 @@ export const changeTodoTitleAC = (todoId: string, title: string) => {
 }
 export const addTodoTC = (title: string) => {
     return async (dispatch: Dispatch) => {
-        try{
-            console.log('addTodo')
             dispatch(changeAppStatusAC('loading'))
-            const todo = await todoApi.addTodo(title)
-            dispatch(changeAppStatusAC('resolve'))
-            const newTodo: TodoDomainType = {...todo.data.data.item,filter: 'all'}
-            dispatch(addTodoAC(newTodo))
-        }
-        catch(e){
-            console.log('what a fuck')
-        }
+            todoApi.addTodo(title)
+                .then((res)=>{
+                    if(res.data.resultCode === 0){
+                        dispatch(changeAppStatusAC('resolve'))
+                        const newTodo: TodoDomainType = {...res.data.data.item,filter: 'all'}
+                        dispatch(addTodoAC(newTodo))
+                    }else{
+                        dispatch(setAppErrorAC(res.data.messages[0]))
+                    }
+                })
+                .catch((e)=>{
+                    console.log(e.message)
+                    dispatch(setAppErrorAC(e.message))
+                })
+
+
     }
 }
 export const getTodosTC = () => {
