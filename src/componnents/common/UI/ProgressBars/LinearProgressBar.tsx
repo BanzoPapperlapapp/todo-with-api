@@ -1,12 +1,13 @@
 import React from 'react';
 import style from './LinearProgressBar.module.css'
+import {StatusAppType} from "../../../../store/AppReducer";
 
 type LinearProgressBarType = {
-    status: boolean
+    status: StatusAppType
 }
 export const LinearProgressBar = ({status}: LinearProgressBarType) => {
 
-    return status
+    return status === 'loading'
                 ?
                 <div className={style.progressBar}>
                 <span className={`${style.bar} ${style.span}`}>
