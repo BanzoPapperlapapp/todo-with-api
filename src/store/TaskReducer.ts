@@ -1,22 +1,11 @@
 import {TaskApiStatuses, TaskApiType, todoApi, UpdateTaskApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
 import {RootStateType} from "./ReduxStore";
-import {AddTodoACType, DelTodoACType} from "./TodoReducer";
-
-export type TaskDomainType = {
-    [key: string]: TaskApiType[]
-}
+import {addTodoAC, delTodoAC} from "./TodoReducer";
 
 const initialState: TaskDomainType = {}
-type UnionTaskReducerActionType =
-    | setTasksACType
-    | addTasksACType
-    | delTaskACType
-    | changeTaskStatusACType
-    | AddTodoACType
-    | DelTodoACType
-    | changeTaskTitleACType
-export const TaskReducer = (state = initialState, action: UnionTaskReducerActionType): TaskDomainType => {
+
+export const TaskReducer = (state = initialState, action: TaskReducerUnionActionType): TaskDomainType => {
     switch (action.type) {
         case "SET-TASKS": {
             const tempState = {...state}
@@ -51,27 +40,10 @@ export const TaskReducer = (state = initialState, action: UnionTaskReducerAction
             return state
     }
 }
-type setTasksACType = ReturnType<typeof setTasksAC>
-export const setTasksAC = (id: string, tasks: TaskApiType[]) => {
-    return {type: 'SET-TASKS', payload: {id, tasks}} as const
-}
-type addTasksACType = ReturnType<typeof addTasksAC>
-export const addTasksAC = (todoId: string, task: TaskApiType) => {
-    return {type: 'ADD-TASK', payload: {todoId, task}} as const
-}
-type delTaskACType = ReturnType<typeof delTaskAC>
-export const delTaskAC = (todoId: string, taskId: string) => {
-    return {type: 'DEL-TASK', payload: {todoId, taskId}} as const
-}
-type changeTaskStatusACType = ReturnType<typeof changeTaskStatusAC>
-export const changeTaskStatusAC = (todoId: string, taskId: string, status: TaskApiStatuses) => {
-    return {type: 'CHANGE-TASK-STATUS', payload: {todoId, taskId , status}} as const
-}
-type changeTaskTitleACType = ReturnType<typeof changeTaskTitleAc>
-export const changeTaskTitleAc = (todoId: string, taskId: string, title: string) => {
-    return {type: 'CHANGE-TASK-TITLE', payload: {todoId, taskId, title}} as const
-}
 
+/****************************************************************/
+/*********************Thunk Creators*****************************/
+/****************************************************************/
 export const getTasksTC = (todoId: string) => {
     return (dispatch: Dispatch) => {
         todoApi.getTasks(todoId)
@@ -120,3 +92,36 @@ export const changeTaskTitleTC = (todoId: string, taskId: string, title: string)
             .then(() => dispatch(changeTaskTitleAc(todoId,taskId,title)))
     }
 }
+/****************************************************************/
+/*********************Action Creators****************************/
+/****************************************************************/
+export const setTasksAC = (id: string, tasks: TaskApiType[]) => {
+    return {type: 'SET-TASKS', payload: {id, tasks}} as const
+}
+export const addTasksAC = (todoId: string, task: TaskApiType) => {
+    return {type: 'ADD-TASK', payload: {todoId, task}} as const
+}
+export const delTaskAC = (todoId: string, taskId: string) => {
+    return {type: 'DEL-TASK', payload: {todoId, taskId}} as const
+}
+export const changeTaskStatusAC = (todoId: string, taskId: string, status: TaskApiStatuses) => {
+    return {type: 'CHANGE-TASK-STATUS', payload: {todoId, taskId , status}} as const
+}
+export const changeTaskTitleAc = (todoId: string, taskId: string, title: string) => {
+    return {type: 'CHANGE-TASK-TITLE', payload: {todoId, taskId, title}} as const
+}
+/****************************************************************/
+/*********************TYPES**************************************/
+/****************************************************************/
+export type TaskDomainType = {
+    [key: string]: TaskApiType[]
+}
+
+type TaskReducerUnionActionType =
+    | ReturnType<typeof setTasksAC>
+    | ReturnType<typeof addTasksAC>
+    | ReturnType<typeof delTaskAC>
+    | ReturnType<typeof changeTaskStatusAC>
+    | ReturnType<typeof addTodoAC>
+    | ReturnType<typeof delTodoAC>
+    | ReturnType<typeof changeTaskTitleAc>

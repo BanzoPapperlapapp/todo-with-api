@@ -2,19 +2,7 @@ import {todoApi, TodoApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
 import {changeAppStatusAC, setAppErrorAC} from "./AppReducer";
 
-
-export type TodoDomainFilterType = 'all' | 'completed' | 'active'
-
-export type TodoDomainType = TodoApiType & {
-    filter: TodoDomainFilterType
-}
-export type TodoReducerUnionActionType =
-    | GetTodosACType
-    | AddTodoACType
-    | DelTodoACType
-    | ChangeTodoTitleACType
 const initialState: TodoDomainType[] = []
-
 export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType): TodoDomainType[] => {
     switch (action.type) {
         case "GET-TODOS": {
@@ -34,22 +22,9 @@ export const TodoReducer = (state = initialState, action: TodoReducerUnionAction
     }
 }
 
-type GetTodosACType = ReturnType<typeof getTodosAC>
-export const getTodosAC = (todos: TodoApiType[]) => {
-    return {type: 'GET-TODOS', payload: {todos}} as const
-}
-export type AddTodoACType = ReturnType<typeof addTodoAC>
-export const addTodoAC = (todo: TodoDomainType) => {
-    return {type: 'ADD-TODO', payload: {todo}} as const
-}
-export type DelTodoACType = ReturnType<typeof delTodoAC>
-export const delTodoAC = (todoId: string) => {
-    return {type: 'DEL-TODO', payload: {todoId}} as const
-}
-export type ChangeTodoTitleACType = ReturnType<typeof changeTodoTitleAC>
-export const changeTodoTitleAC = (todoId: string, title: string) => {
-    return {type: 'CHANGE-TODO-TITLE', payload: {todoId, title}} as const
-}
+/****************************************************************/
+/*********************Thunk Creators*****************************/
+/****************************************************************/
 export const addTodoTC = (title: string) => {
     return async (dispatch: Dispatch) => {
         try {
@@ -67,7 +42,8 @@ export const addTodoTC = (title: string) => {
                 dispatch(changeAppStatusAC('failed'))
             }
         } catch (e: unknown) {
-            console.log((e as Error).message)
+            dispatch(setAppErrorAC((e as Error).message))
+            dispatch(changeAppStatusAC('failed'))
         }
     }
 }
@@ -104,3 +80,35 @@ export const changeTodoTC = (todoId: string, title: string) => {
             .then(() => dispatch(changeTodoTitleAC(todoId, title)))
     }
 }
+/****************************************************************/
+/*********************Action Creators****************************/
+/****************************************************************/
+export const getTodosAC = (todos: TodoApiType[]) => {
+    return {type: 'GET-TODOS', payload: {todos}} as const
+}
+export const addTodoAC = (todo: TodoDomainType) => {
+    return {type: 'ADD-TODO', payload: {todo}} as const
+}
+export const delTodoAC = (todoId: string) => {
+    return {type: 'DEL-TODO', payload: {todoId}} as const
+}
+export const changeTodoTitleAC = (todoId: string, title: string) => {
+    return {type: 'CHANGE-TODO-TITLE', payload: {todoId, title}} as const
+}
+/****************************************************************/
+/*********************TYPES**************************************/
+/****************************************************************/
+export type TodoDomainFilterType = 'all' | 'completed' | 'active'
+
+export type TodoDomainType = TodoApiType & {
+    filter: TodoDomainFilterType
+}
+export type TodoReducerUnionActionType =
+    |ReturnType<typeof addTodoAC>
+    | ReturnType<typeof getTodosAC>
+    | ReturnType<typeof addTodoAC>
+    | ReturnType<typeof delTodoAC>
+    | ReturnType<typeof changeTodoTitleAC>
+
+
+
