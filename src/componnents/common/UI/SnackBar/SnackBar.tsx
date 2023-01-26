@@ -5,7 +5,9 @@ import {useAppDispatch, useAppSelector} from "../../../../store/ReduxStore";
 
 export const SnackBar = () => {
     const error = useAppSelector<null | string>(state => state.app.error)
+
     const dispatch = useAppDispatch()
+    
     useEffect(()=>{
             const id = error?.length && setTimeout(()=> {
                 dispatch(setAppErrorAC(null))
@@ -21,6 +23,6 @@ export const SnackBar = () => {
         ?
         <div className={finalSnackBarStyle}><span>{error}</span></div>
         :
-        <div className={`${finalSnackBarStyle} ${style.disable}`}></div>
+        <></>
 
 };

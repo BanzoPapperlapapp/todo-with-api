@@ -3,7 +3,6 @@ import {Dispatch} from "redux";
 import {changeAppStatusAC, setAppErrorAC} from "./AppReducer";
 
 
-
 export type TodoDomainFilterType = 'all' | 'completed' | 'active'
 
 export type TodoDomainType = TodoApiType & {
@@ -14,23 +13,24 @@ export type TodoReducerUnionActionType =
     | AddTodoACType
     | DelTodoACType
     | ChangeTodoTitleACType
-const initialState:TodoDomainType[] = []
+const initialState: TodoDomainType[] = []
 
-export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType) : TodoDomainType[] => {
+export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType): TodoDomainType[] => {
     switch (action.type) {
         case "GET-TODOS": {
-            return action.payload.todos.map(t => ({...t,filter: 'all'}))
+            return action.payload.todos.map(t => ({...t, filter: 'all'}))
         }
         case "ADD-TODO": {
-            return [action.payload.todo,...state]
+            return [action.payload.todo, ...state]
         }
         case "DEL-TODO": {
             return state.filter(t => t.id !== action.payload.todoId)
         }
         case "CHANGE-TODO-TITLE": {
-            return state.map(t => t.id === action.payload.todoId ? {...t,title: action.payload.title} : t)
+            return state.map(t => t.id === action.payload.todoId ? {...t, title: action.payload.title} : t)
         }
-        default: return state;
+        default:
+            return state;
     }
 }
 
@@ -52,56 +52,55 @@ export const changeTodoTitleAC = (todoId: string, title: string) => {
 }
 export const addTodoTC = (title: string) => {
     return async (dispatch: Dispatch) => {
+        try {
             dispatch(changeAppStatusAC('loading'))
-            todoApi.addTodo(title)
-                .then((res)=>{
-                    if(res.data.resultCode === 0){
-                        dispatch(changeAppStatusAC('resolve'))
-                        const newTodo: TodoDomainType = {...res.data.data.item,filter: 'all'}
-                        dispatch(addTodoAC(newTodo))
-                    }else{
-                        dispatch(setAppErrorAC(res.data.messages[0]))
-                    }
-                })
-                .catch((e)=>{
-                    console.log(e.message)
-                    dispatch(setAppErrorAC(e.message))
-                })
+            const todo = await todoApi.addTodo(title)
 
-
+            if (todo.data.resultCode === 0) {
+                dispatch(changeAppStatusAC('resolve'))
+                const newTodo: TodoDomainType = {...todo.data.data.item, filter: 'all'}
+                dispatch(addTodoAC(newTodo))
+            } else {
+                todo.data.messages.length
+                    ? dispatch(setAppErrorAC(todo.data.messages[0]))
+                    : dispatch(setAppErrorAC('Some error occurred'))
+                dispatch(changeAppStatusAC('failed'))
+            }
+        } catch (e: unknown) {
+            console.log((e as Error).message)
+        }
     }
 }
 export const getTodosTC = () => {
     return async (dispatch: Dispatch) => {
-        try{
+        try {
             dispatch(changeAppStatusAC('loading'))
-            const todos = await  todoApi.getTodos()
-            dispatch(changeAppStatusAC('resolve'))
+            const todos = await todoApi.getTodos()
             dispatch(getTodosAC(todos.data))
-        } catch (e){
+            dispatch(changeAppStatusAC('resolve'))
+        } catch (e) {
             console.log((e as Error).message)
             dispatch(setAppErrorAC((e as Error).message))
         }
-
 
     }
 }
 export const delTodoTC = (todoId: string) => {
     return async (dispatch: Dispatch) => {
-        try{
+        try {
             // dispatch(changeAppStatusAC('loading'))
             const res = await todoApi.delTodo(todoId)
             // dispatch(changeAppStatusAC('resolve'))
             dispatch(delTodoAC(todoId))
-        } catch (e){
+        } catch (e) {
             console.log(e)
-            dispatch(setAppErrorAC('Some errorrrrrrrr'))
+            dispatch(setAppErrorAC((e as Error).message))
         }
     }
 }
-export const changeTodoTC = (todoId: string,title: string) => {
+export const changeTodoTC = (todoId: string, title: string) => {
     return (dispatch: Dispatch) => {
-        todoApi.updateTodo(todoId,title)
-            .then(() => dispatch(changeTodoTitleAC(todoId,title)))
+        todoApi.updateTodo(todoId, title)
+            .then(() => dispatch(changeTodoTitleAC(todoId, title)))
     }
 }

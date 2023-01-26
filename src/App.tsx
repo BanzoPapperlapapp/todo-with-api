@@ -11,6 +11,7 @@ import {SnackBar} from "./componnents/common/UI/SnackBar/SnackBar";
 
 function App() {
     const status = useAppSelector<StatusAppType>(state => state.app.status)
+    console.log(status)
     const dispatch = useAppDispatch()
     const addTodoHandler = (title: string) => {
         dispatch(addTodoTC(title))
@@ -28,8 +29,8 @@ function App() {
                         <AddItem addItem={addTodoHandler}/>
                     </div>
                     <Todolists/>
-                    <SnackBar/>
                 </div>
+                <SnackBar/>
             </div>
     );
 }

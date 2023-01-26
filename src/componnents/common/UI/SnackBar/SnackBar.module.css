@@ -10,15 +10,12 @@
     padding: 16px; /* Отступ */
     position: fixed; /* Сядьте на верхнюю часть экрана */
     z-index: 1; /* Добавить z-индекс при необходимости */
-    left: 50%; /* Центр, снэк-бар */
+    left: 10%; /* Центр, снэк-бар */
     bottom: 30px; /* 30 пикселей снизу */
     -webkit-animation: fadein 0.5s;
     animation: fadein 0.5s;
 }
 
-.disable {
-    visibility: hidden;
-}
 .red {
     background: crimson;
 }

@@ -24,7 +24,7 @@ type FinalActionType =
     | changeAppStatusACType
     | setAppErrorACType
 
-export type StatusAppType = 'loading' | 'resolve'
+export type StatusAppType = 'loading' | 'resolve' | 'failed'
 
 export type AppReducerStateType = {
     status: StatusAppType

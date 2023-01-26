@@ -45,12 +45,12 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
 
     const onClickActiveModalWindow = (status: boolean) => setStatusModal(status)
 
-
     const changeTaskStatusHandler = (e: React.ChangeEvent<HTMLInputElement>, taskId: string) => {
         const status = e.currentTarget.checked ? TaskApiStatuses.Completed : TaskApiStatuses.Now
         dispatch(changeTaskStatusTC(id, taskId, status))
     }
     const changeTodoTitle = (todoTitle: string) => dispatch(changeTodoTC(id, todoTitle))
+
     const changeTaskTitle = (title: string, taskId: string) => {
         dispatch(changeTaskTitleTC(id, taskId, title))
     }
