@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 import {TaskApiStatuses, TaskApiType} from "../../api/todolistApi";
 import style from './Todo.module.css'
 import {useAppDispatch} from "../../store/ReduxStore";
@@ -10,7 +10,7 @@ import {
     delTaskTC,
     getTasksTC
 } from "../../store/TaskReducer";
-import {changeTodoTC, delTodoTC} from "../../store/TodoReducer";
+import {updateTodoTC, delTodoTC} from "../../store/TodoReducer";
 import {EditableSpan} from "../common/Editablespan";
 import {ModalWindow} from "../common/UI/ModalWindows/ModalWindow";
 import {AddItem} from "../common/AddItem";
@@ -21,10 +21,10 @@ type TodoPropsTypes = {
     id: string
     tasks: TaskApiType[]
 }
-export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
+export const Todo = memo(({id, title, tasks}: TodoPropsTypes) => {
     const [isLoading, setIsLoading] = useState(true)
     const [statusModal, setStatusModal] = useState(false)
-
+    console.log(title+ ' rerender')
     const dispatch = useAppDispatch()
 
     useEffect(() => {
@@ -49,10 +49,17 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
         const status = e.currentTarget.checked ? TaskApiStatuses.Completed : TaskApiStatuses.Now
         dispatch(changeTaskStatusTC(id, taskId, status))
     }
-    const changeTodoTitle = (todoTitle: string) => dispatch(changeTodoTC(id, todoTitle))
+    const changeTodoTitle = (todoTitle: string) => dispatch(updateTodoTC(id, todoTitle))
 
     const changeTaskTitle = (title: string, taskId: string) => {
         dispatch(changeTaskTitleTC(id, taskId, title))
+    }
+    if(isLoading){
+        return(
+            <div className={style.container}>
+                <div style={{ height: '100%',display: 'flex', justifyContent: 'center', alignItems: 'center',padding: '10px'}}><CircleProgressBar/> </div>
+            </div>
+        )
     }
     return (
         <div className={style.container}>
@@ -80,6 +87,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
 
                 </div>
             </div>
+
             <div className={style.todolistWrapper}>
                 <h3>
                     <EditableSpan title={title} addItem={(todoTitle: string) => changeTodoTitle(todoTitle)}/>
@@ -88,9 +96,7 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
 
                 </div>
                 <ul className={style.list}>
-                    {isLoading
-                        ? <div style={{display: 'flex', justifyContent: 'center',padding: '10px'}}><CircleProgressBar/> </div>
-                        : tasks?.length
+                    { tasks?.length
                             ? tasks.map(t => <li
                                 key={t.id}>
                                 <input
@@ -112,4 +118,4 @@ export const Todo = ({id, title, tasks}: TodoPropsTypes) => {
             </div>
         </div>
     )
-}
+})

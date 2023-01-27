@@ -59,7 +59,7 @@ type addTodoType = {
 type addTodoResponseType = {
     item: addTodoType
 }
-type TodoApiResponseType<D = {}> = {
+export type TodoApiResponseType<D = {}> = {
     data: D
     resultCode: number
     messages: string[]

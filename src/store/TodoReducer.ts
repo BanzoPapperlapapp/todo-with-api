@@ -1,6 +1,6 @@
 import {todoApi, TodoApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
-import {changeAppStatusAC, setAppErrorAC} from "./AppReducer";
+import {setAppStatusAC, setAppErrorAC} from "./AppReducer";
 
 const initialState: TodoDomainType[] = []
 export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType): TodoDomainType[] => {
@@ -21,41 +21,42 @@ export const TodoReducer = (state = initialState, action: TodoReducerUnionAction
             return state;
     }
 }
-
+/****************************************************************/
+/*********************Future Function*****************************/
+/****************************************************************/
+function errorHandler(error: string[], dispatch: Dispatch) {
+    dispatch(setAppErrorAC(error.length ? error[0] : 'Some error occurred'))
+    dispatch(setAppStatusAC('failed'))
+}
 /****************************************************************/
 /*********************Thunk Creators*****************************/
 /****************************************************************/
 export const addTodoTC = (title: string) => {
     return async (dispatch: Dispatch) => {
         try {
-            dispatch(changeAppStatusAC('loading'))
+            dispatch(setAppStatusAC('pending'))
             const todo = await todoApi.addTodo(title)
 
             if (todo.data.resultCode === 0) {
-                dispatch(changeAppStatusAC('resolve'))
+                dispatch(setAppStatusAC('idle'))
                 const newTodo: TodoDomainType = {...todo.data.data.item, filter: 'all'}
                 dispatch(addTodoAC(newTodo))
             } else {
-                todo.data.messages.length
-                    ? dispatch(setAppErrorAC(todo.data.messages[0]))
-                    : dispatch(setAppErrorAC('Some error occurred'))
-                dispatch(changeAppStatusAC('failed'))
+                errorHandler(todo.data.messages, dispatch)
             }
         } catch (e: unknown) {
-            dispatch(setAppErrorAC((e as Error).message))
-            dispatch(changeAppStatusAC('failed'))
+            errorHandler([(e as Error).message], dispatch)
         }
     }
 }
 export const getTodosTC = () => {
     return async (dispatch: Dispatch) => {
         try {
-            dispatch(changeAppStatusAC('loading'))
+            dispatch(setAppStatusAC('pending'))
             const todos = await todoApi.getTodos()
             dispatch(getTodosAC(todos.data))
-            dispatch(changeAppStatusAC('resolve'))
+            dispatch(setAppStatusAC('idle'))
         } catch (e) {
-            console.log((e as Error).message)
             dispatch(setAppErrorAC((e as Error).message))
         }
 
@@ -64,20 +65,34 @@ export const getTodosTC = () => {
 export const delTodoTC = (todoId: string) => {
     return async (dispatch: Dispatch) => {
         try {
-            // dispatch(changeAppStatusAC('loading'))
-            const res = await todoApi.delTodo(todoId)
-            // dispatch(changeAppStatusAC('resolve'))
-            dispatch(delTodoAC(todoId))
-        } catch (e) {
-            console.log(e)
-            dispatch(setAppErrorAC((e as Error).message))
+            dispatch(setAppStatusAC('pending'))
+            const res = (await todoApi.delTodo(todoId)).data
+            if (res.resultCode === 0) {
+                dispatch(delTodoAC(todoId))
+                dispatch(setAppStatusAC('idle'))
+            } else {
+                errorHandler(res.messages, dispatch)
+            }
+        } catch (e: unknown) {
+            errorHandler([(e as Error).message], dispatch)
         }
     }
 }
-export const changeTodoTC = (todoId: string, title: string) => {
-    return (dispatch: Dispatch) => {
-        todoApi.updateTodo(todoId, title)
-            .then(() => dispatch(changeTodoTitleAC(todoId, title)))
+export const updateTodoTC = (todoId: string, title: string) => {
+    return async (dispatch: Dispatch) => {
+        try{
+            dispatch(setAppStatusAC('pending'))
+            const res = (await todoApi.updateTodo(todoId, title)).data
+            if(res.resultCode === 0){
+                dispatch(changeTodoTitleAC(todoId,title))
+                dispatch(setAppStatusAC('idle'))
+            } else {
+                errorHandler(res.messages,dispatch)
+            }
+        } catch (e: unknown){
+            errorHandler([(e as Error).message],dispatch)
+        }
+
     }
 }
 /****************************************************************/
@@ -104,7 +119,7 @@ export type TodoDomainType = TodoApiType & {
     filter: TodoDomainFilterType
 }
 export type TodoReducerUnionActionType =
-    |ReturnType<typeof addTodoAC>
+    | ReturnType<typeof addTodoAC>
     | ReturnType<typeof getTodosAC>
     | ReturnType<typeof addTodoAC>
     | ReturnType<typeof delTodoAC>

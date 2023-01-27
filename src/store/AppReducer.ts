@@ -1,4 +1,4 @@
-const initialAppReducerState:AppReducerStateType = {status: 'loading', error: null}
+const initialAppReducerState:AppReducerStateType = {status: 'pending', error: null}
 export const AppReducer = (state = initialAppReducerState, action: FinalActionType):AppReducerStateType => {
     switch (action.type){
         case "CHANGE-APP-STATUS": {
@@ -11,8 +11,8 @@ export const AppReducer = (state = initialAppReducerState, action: FinalActionTy
     }
 };
 
-type changeAppStatusACType = ReturnType<typeof changeAppStatusAC>
-export const changeAppStatusAC = (status: StatusAppType) => {
+type changeAppStatusACType = ReturnType<typeof setAppStatusAC>
+export const setAppStatusAC = (status: StatusAppType) => {
     return {type: 'CHANGE-APP-STATUS', payload: {status}} as const
 }
 type setAppErrorACType = ReturnType<typeof setAppErrorAC>
@@ -24,7 +24,7 @@ type FinalActionType =
     | changeAppStatusACType
     | setAppErrorACType
 
-export type StatusAppType = 'loading' | 'resolve' | 'failed'
+export type StatusAppType = 'loading' | 'idle' | 'pending' | 'failed'
 
 export type AppReducerStateType = {
     status: StatusAppType
