@@ -1,4 +1,4 @@
-const initialAppReducerState:AppReducerStateType = {status: 'pending', error: null}
+const initialAppReducerState:AppReducerStateType = {status: 'loading', error: null}
 export const AppReducer = (state = initialAppReducerState, action: FinalActionType):AppReducerStateType => {
     switch (action.type){
         case "CHANGE-APP-STATUS": {

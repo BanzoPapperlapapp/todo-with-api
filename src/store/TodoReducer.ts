@@ -1,6 +1,8 @@
 import {todoApi, TodoApiType} from "../api/todolistApi";
 import {Dispatch} from "redux";
 import {setAppStatusAC, setAppErrorAC} from "./AppReducer";
+import {getTasksTC} from "./TaskReducer";
+import {AppThunk} from "./ReduxStore";
 
 const initialState: TodoDomainType[] = []
 export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType): TodoDomainType[] => {
@@ -49,12 +51,13 @@ export const addTodoTC = (title: string) => {
         }
     }
 }
-export const getTodosTC = () => {
-    return async (dispatch: Dispatch) => {
+export const getTodosTC = ():AppThunk => {
+    return async (dispatch) => {
         try {
-            dispatch(setAppStatusAC('pending'))
+            dispatch(setAppStatusAC('loading'))
             const todos = await todoApi.getTodos()
             dispatch(getTodosAC(todos.data))
+            todos.data.forEach(el => dispatch(getTasksTC(el.id)))
             dispatch(setAppStatusAC('idle'))
         } catch (e) {
             dispatch(setAppErrorAC((e as Error).message))

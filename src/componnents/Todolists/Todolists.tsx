@@ -11,10 +11,7 @@ export const Todolists = () => {
     const todos = useSelector<RootStateType,TodoDomainType[]>(state => state.todos)
     const tasks = useSelector<RootStateType,TaskDomainType>(state => state.tasks)
     console.log('Todolists rerender')
-    const dispatch = useAppDispatch()
-    useEffect(()=> {
-        dispatch(getTodosTC())
-    },[])
+
 
     return (
         <div className={style.container}>

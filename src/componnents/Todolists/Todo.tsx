@@ -28,7 +28,6 @@ export const Todo = memo(({id, title, tasks}: TodoPropsTypes) => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(getTasksTC(id))
         setTimeout(() => {
             setIsLoading(false)
         }, 1000)
@@ -54,13 +53,13 @@ export const Todo = memo(({id, title, tasks}: TodoPropsTypes) => {
     const changeTaskTitle = (title: string, taskId: string) => {
         dispatch(changeTaskTitleTC(id, taskId, title))
     }
-    if(isLoading){
-        return(
-            <div className={style.container}>
-                <div style={{ height: '100%',display: 'flex', justifyContent: 'center', alignItems: 'center',padding: '10px'}}><CircleProgressBar/> </div>
-            </div>
-        )
-    }
+    // if(isLoading){
+    //     return(
+    //         <div className={style.container}>
+    //             <div style={{ height: '100%',display: 'flex', justifyContent: 'center', alignItems: 'center',padding: '10px'}}><CircleProgressBar/> </div>
+    //         </div>
+    //     )
+    // }
     return (
         <div className={style.container}>
             <ModalWindow setStatus={onClickActiveModalWindow} status={statusModal}>

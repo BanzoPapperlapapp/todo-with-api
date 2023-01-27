@@ -2,6 +2,7 @@ import {TaskApiStatuses, TaskApiType, todoApi, UpdateTaskApiType} from "../api/t
 import {Dispatch} from "redux";
 import {RootStateType} from "./ReduxStore";
 import {addTodoAC, delTodoAC} from "./TodoReducer";
+import {setAppStatusAC} from "./AppReducer";
 
 const initialState: TaskDomainType = {}
 
@@ -47,7 +48,9 @@ export const TaskReducer = (state = initialState, action: TaskReducerUnionAction
 export const getTasksTC = (todoId: string) => {
     return (dispatch: Dispatch) => {
         todoApi.getTasks(todoId)
-            .then(res => dispatch(setTasksAC(todoId, res.data.items)))
+            .then(res => {
+                dispatch(setTasksAC(todoId, res.data.items))
+            })
     }
 }
 export const addTaskTC = (todoId: string, title: string) => {
