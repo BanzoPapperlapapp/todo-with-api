@@ -27,12 +27,14 @@ export const TodoReducer = (state = initialState, action: TodoReducerUnionAction
 }
 /****************************************************************/
 /*********************Future Function*****************************/
+
 /****************************************************************/
 function errorHandler(dispatch: Dispatch, err?: string[] | string) {
     const error = typeof err === 'object' ? err[0] : err
     dispatch(setAppErrorAC(error ? error : 'Some error occurred'))
     dispatch(setAppStatusAC('failed'))
 }
+
 /****************************************************************/
 /*********************Thunk Creators*****************************/
 /****************************************************************/
@@ -42,7 +44,7 @@ export const addTodoTC = (title: string) => {
             dispatch(setAppStatusAC('pending'))
             const todo = await todoApi.addTodo(title)
 
-            if (todo.data.resultCode === 0) {
+            if (todo.data.resultCode === ResultCode.OK) {
                 dispatch(setAppStatusAC('idle'))
                 const newTodo: TodoDomainType = {...todo.data.data.item, filter: 'all'}
                 dispatch(addTodoAC(newTodo))
@@ -50,7 +52,9 @@ export const addTodoTC = (title: string) => {
                 errorHandler(dispatch, todo.data.messages)
             }
         } catch (e: unknown) {
-            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+            axios.isAxiosError(e)
+                ? errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+                : errorHandler(dispatch)
         }
     }
 }
@@ -63,9 +67,10 @@ export const getTodosTC = (): AppThunk => {
             todos.data.forEach(el => dispatch(getTasksTC(el.id)))
             dispatch(setAppStatusAC('idle'))
         } catch (e: unknown) {
-            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+            axios.isAxiosError(e)
+                ? errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+                : errorHandler(dispatch)
         }
-
     }
 }
 export const delTodoTC = (todoId: string) => {
@@ -73,14 +78,16 @@ export const delTodoTC = (todoId: string) => {
         try {
             dispatch(setAppStatusAC('pending'))
             const res = (await todoApi.delTodo(todoId)).data
-            if (res.resultCode === 0) {
+            if (res.resultCode === ResultCode.OK) {
                 dispatch(delTodoAC(todoId))
                 dispatch(setAppStatusAC('idle'))
             } else {
                 errorHandler(dispatch, res.messages)
             }
         } catch (e: unknown) {
-            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+            axios.isAxiosError(e)
+                ? errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+                : errorHandler(dispatch)
         }
     }
 }
@@ -89,16 +96,17 @@ export const updateTodoTC = (todoId: string, title: string) => {
         try {
             dispatch(setAppStatusAC('pending'))
             const res = (await todoApi.updateTodo(todoId, title)).data
-            if (res.resultCode === 0) {
+            if (res.resultCode === ResultCode.OK) {
                 dispatch(changeTodoTitleAC(todoId, title))
                 dispatch(setAppStatusAC('idle'))
             } else {
                 errorHandler(dispatch, res.messages)
             }
         } catch (e: unknown) {
-            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+            axios.isAxiosError(e)
+                ? errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
+                : errorHandler(dispatch)
         }
-
     }
 }
 /****************************************************************/
@@ -131,5 +139,9 @@ export type TodoReducerUnionActionType =
     | ReturnType<typeof delTodoAC>
     | ReturnType<typeof changeTodoTitleAC>
 
-
+enum ResultCode {
+    OK,
+    ERROR,
+    CAPTCHA = 10
+}
 
