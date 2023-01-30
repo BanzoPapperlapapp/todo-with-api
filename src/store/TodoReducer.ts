@@ -3,6 +3,8 @@ import {Dispatch} from "redux";
 import {setAppStatusAC, setAppErrorAC} from "./AppReducer";
 import {getTasksTC} from "./TaskReducer";
 import {AppThunk} from "./ReduxStore";
+import axios from "axios";
+
 
 const initialState: TodoDomainType[] = []
 export const TodoReducer = (state = initialState, action: TodoReducerUnionActionType): TodoDomainType[] => {
@@ -26,8 +28,9 @@ export const TodoReducer = (state = initialState, action: TodoReducerUnionAction
 /****************************************************************/
 /*********************Future Function*****************************/
 /****************************************************************/
-function errorHandler(error: string[], dispatch: Dispatch) {
-    dispatch(setAppErrorAC(error.length ? error[0] : 'Some error occurred'))
+function errorHandler(dispatch: Dispatch, err?: string[] | string) {
+    const error = typeof err === 'object' ? err[0] : err
+    dispatch(setAppErrorAC(error ? error : 'Some error occurred'))
     dispatch(setAppStatusAC('failed'))
 }
 /****************************************************************/
@@ -44,14 +47,14 @@ export const addTodoTC = (title: string) => {
                 const newTodo: TodoDomainType = {...todo.data.data.item, filter: 'all'}
                 dispatch(addTodoAC(newTodo))
             } else {
-                errorHandler(todo.data.messages, dispatch)
+                errorHandler(dispatch, todo.data.messages)
             }
         } catch (e: unknown) {
-            errorHandler([(e as Error).message], dispatch)
+            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
         }
     }
 }
-export const getTodosTC = ():AppThunk => {
+export const getTodosTC = (): AppThunk => {
     return async (dispatch) => {
         try {
             dispatch(setAppStatusAC('loading'))
@@ -59,8 +62,8 @@ export const getTodosTC = ():AppThunk => {
             dispatch(getTodosAC(todos.data))
             todos.data.forEach(el => dispatch(getTasksTC(el.id)))
             dispatch(setAppStatusAC('idle'))
-        } catch (e) {
-            dispatch(setAppErrorAC((e as Error).message))
+        } catch (e: unknown) {
+            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
         }
 
     }
@@ -74,26 +77,26 @@ export const delTodoTC = (todoId: string) => {
                 dispatch(delTodoAC(todoId))
                 dispatch(setAppStatusAC('idle'))
             } else {
-                errorHandler(res.messages, dispatch)
+                errorHandler(dispatch, res.messages)
             }
         } catch (e: unknown) {
-            errorHandler([(e as Error).message], dispatch)
+            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
         }
     }
 }
 export const updateTodoTC = (todoId: string, title: string) => {
     return async (dispatch: Dispatch) => {
-        try{
+        try {
             dispatch(setAppStatusAC('pending'))
             const res = (await todoApi.updateTodo(todoId, title)).data
-            if(res.resultCode === 0){
-                dispatch(changeTodoTitleAC(todoId,title))
+            if (res.resultCode === 0) {
+                dispatch(changeTodoTitleAC(todoId, title))
                 dispatch(setAppStatusAC('idle'))
             } else {
-                errorHandler(res.messages,dispatch)
+                errorHandler(dispatch, res.messages)
             }
-        } catch (e: unknown){
-            errorHandler([(e as Error).message],dispatch)
+        } catch (e: unknown) {
+            axios.isAxiosError(e) && errorHandler(dispatch, e.response?.data ? e.response.data.map : e.message)
         }
 
     }
